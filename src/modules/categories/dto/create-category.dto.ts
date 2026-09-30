@@ -1,0 +1,2 @@
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger'; import { IsIn, IsOptional, IsString, MaxLength } from 'class-validator';
+export class CreateCategoryDto { @ApiProperty() @IsString() @MaxLength(80) name: string; @ApiProperty({ enum: ['income','expense'] }) @IsIn(['income','expense']) kind: 'income'|'expense'; @ApiPropertyOptional() @IsOptional() @IsString() @MaxLength(20) color?: string; }

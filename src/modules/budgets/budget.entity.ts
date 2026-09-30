@@ -1,0 +1,3 @@
+import { Column, CreateDateColumn, Entity, Index, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'; import { User } from '../auth/user.entity'; import { Category } from '../categories/category.entity';
+@Entity('budgets') @Index(['user', 'month', 'category'], { unique: true })
+export class Budget { @PrimaryGeneratedColumn('uuid') id: string; @ManyToOne(() => User, { onDelete: 'CASCADE' }) user: User; @ManyToOne(() => Category, { nullable: true, onDelete: 'SET NULL' }) category: Category | null; @Column({ type: 'char', length: 7 }) month: string; @Column({ type: 'numeric', precision: 14, scale: 2 }) limitAmount: string; @Column({ length: 120, nullable: true }) name?: string; @CreateDateColumn() createdAt: Date; @UpdateDateColumn() updatedAt: Date; }
