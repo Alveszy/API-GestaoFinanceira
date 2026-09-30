@@ -1,9 +1,4 @@
-# Documentação arquitetural — API de Gestão Financeira
-
-**Projeto:** API de Gestão Financeira  
-**Versão do documento:** 1.0  
-**Data:** 29/09/2026  
-**Escopo:** processo de criação, arquitetura C4 (containers e componentes), modelo UML, decisões técnicas e requisitos não funcionais implementados.
+# API de Gestão Financeira  
 
 ## 1. Visão geral
 
