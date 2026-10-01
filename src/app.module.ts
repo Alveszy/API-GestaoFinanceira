@@ -1,8 +1,19 @@
+// Importa o recurso para criar um módulo no NestJS.
 import { Module } from '@nestjs/common';
+
+// Importa as ferramentas para carregar e acessar configurações da aplicação.
 import { ConfigModule, ConfigService } from '@nestjs/config';
+
+// Importa o recurso usado para criar um Guard global.
 import { APP_GUARD } from '@nestjs/core';
+
+// Importa as ferramentas de controle de requisições.
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+
+// Importa as ferramentas para conectar o NestJS ao banco de dados.
 import { TypeOrmModule } from '@nestjs/typeorm';
+
+// Importa os módulos responsáveis pelas funcionalidades da aplicação.
 import { AuthModule } from './modules/auth/auth.module';
 import { AccountsModule } from './modules/accounts/accounts.module';
 import { TransactionsModule } from './modules/transactions/transactions.module';
@@ -10,7 +21,11 @@ import { CategoriesModule } from './modules/categories/categories.module';
 import { BudgetsModule } from './modules/budgets/budgets.module';
 import { HealthModule } from './modules/health/health.module';
 import { CommonModule } from './common/common.module';
+
+// Importa o Guard responsável por verificar as permissões dos usuários.
 import { RolesGuard } from './common/roles.guard';
+
+// Importa as entidades que representam as tabelas do banco de dados.
 import { User } from './modules/auth/user.entity';
 import { Account } from './modules/accounts/account.entity';
 import { Transaction } from './modules/transactions/transaction.entity';
