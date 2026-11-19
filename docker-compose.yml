@@ -9,7 +9,7 @@ services:
       NODE_ENV: production
       PORT: 3000
       API_PREFIX: api/v1
-      JWT_SECRET: ${JWT_SECRET:-local-development-secret-change-this-32chars}
+      JWT_SECRET: ${JWT_SECRET:?Configure JWT_SECRET no arquivo .env}
       JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-15m}
       JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-local-refresh-secret-change-this-32}
       JWT_REFRESH_EXPIRES_IN: ${JWT_REFRESH_EXPIRES_IN:-7d}
@@ -24,6 +24,10 @@ services:
       REDIS_HOST: redis
       REDIS_PORT: 6379
       REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+      R2_BUCKET: ${R2_BUCKET:-}
+      R2_ENDPOINT: ${R2_ENDPOINT:-}
+      R2_ACCESS_KEY_ID: ${R2_ACCESS_KEY_ID:-}
+      R2_SECRET_ACCESS_KEY: ${R2_SECRET_ACCESS_KEY:-}
     depends_on:
       postgres: { condition: service_healthy }
       redis: { condition: service_healthy }
@@ -41,7 +45,7 @@ services:
       POSTGRES_USER: ${DB_USERNAME:-finance}
       POSTGRES_PASSWORD: ${DB_PASSWORD:-finance_dev}
       POSTGRES_DB: ${DB_DATABASE:-finance_db}
-    ports: ["5432:5432"]
+    ports: ["127.0.0.1:5432:5432"]
     volumes: ["postgres_data:/var/lib/postgresql/data"]
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-finance} -d ${DB_DATABASE:-finance_db}"]
@@ -56,7 +60,7 @@ services:
     command: ["sh", "-c", "if [ -n \"$$REDIS_PASSWORD\" ]; then redis-server --appendonly yes --requirepass \"$$REDIS_PASSWORD\"; else redis-server --appendonly yes; fi"]
     environment:
       REDIS_PASSWORD: ${REDIS_PASSWORD:-}
-    ports: ["6379:6379"]
+    ports: ["127.0.0.1:6379:6379"]
     volumes: ["redis_data:/data"]
     healthcheck:
       test: ["CMD-SHELL", "if [ -n \"$$REDIS_PASSWORD\" ]; then redis-cli -a \"$$REDIS_PASSWORD\" ping; else redis-cli ping; fi"]

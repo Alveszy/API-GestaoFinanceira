@@ -114,7 +114,6 @@ export class AuthService implements OnModuleInit {
     // Gera o JWT com os dados básicos do usuário.
     const accessToken = await this.jwt.signAsync({
       sub: user.id,
-      email: user.email,
       role: user.role,
     });
 

@@ -8,7 +8,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiHeader, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -47,6 +47,7 @@ export class BudgetsController {
   ) {}
 
   @Post()
+  @ApiHeader({ name: 'idempotency-key', required: true, schema: { type: 'string', minLength: 1, maxLength: 128 } })
   create(
     @CurrentUser() user: any,
     @Body() dto: CreateBudgetDto,

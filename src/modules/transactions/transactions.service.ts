@@ -13,6 +13,7 @@ import { Category } from '../categories/category.entity';
 
 // Importa o DTO usado para receber os dados de uma nova transação.
 import { CreateTransactionDto } from './dto/create-transaction.dto';
+import { TransactionReceiptsService } from './transaction-receipts.service';
 
 // Marca a classe como um serviço gerenciado pelo NestJS.
 @Injectable()
@@ -31,6 +32,7 @@ export class TransactionsService {
     // Repositório responsável pelas categorias.
     @InjectRepository(Category)
     private categories: Repository<Category>,
+    private receipts: TransactionReceiptsService,
   ) {}
 
   // Cria uma nova transação para o usuário.
@@ -166,26 +168,36 @@ export class TransactionsService {
       .getMany();
   }
 
-  // Remove uma transação específica do usuário.
-  async remove(userId: string, id: string) {
-
-    // Procura a transação pelo ID e verifica se pertence ao usuário.
-    const t = await this.tx.findOneBy({
-      id,
-      user: { id: userId },
+  putReceipt(userId: string, id: string, bytes?: Buffer) {
+    return this.tx.manager.transaction(async manager => {
+      const transaction = await this.findOwned(manager.getRepository(Transaction), userId, id, true);
+      return this.receipts.put(userId, transaction.id, bytes);
     });
+  }
 
-    // Retorna erro caso a transação não seja encontrada.
-    if (!t) {
-      throw new NotFoundException('Transação não encontrada.');
-    }
+  async getReceipt(userId: string, id: string, preview = false) {
+    const transaction = await this.findOwned(this.tx, userId, id);
+    return this.receipts.get(userId, transaction.id, preview);
+  }
 
-    // Remove a transação do banco de dados.
-    await this.tx.remove(t);
+  remove(userId: string, id: string) {
+    return this.tx.manager.transaction(async manager => {
+      const repository = manager.getRepository(Transaction);
+      const transaction = await this.findOwned(repository, userId, id, true);
+      const transactionId = transaction.id;
+      await repository.remove(transaction);
+      await this.receipts.deleteForTransaction(userId, transactionId);
+      return { deleted: true };
+    });
+  }
 
-    // Retorna uma confirmação de que a exclusão foi realizada.
-    return {
-      deleted: true,
-    };
+  private async findOwned(repository: Repository<Transaction>, userId: string, id: string, lock = false) {
+    const query = repository.createQueryBuilder('transaction')
+      .where('transaction.id = :id', { id })
+      .andWhere('transaction.userId = :userId', { userId });
+    if (lock) query.setLock('pessimistic_write');
+    const transaction = await query.getOne();
+    if (!transaction) throw new NotFoundException('Transação não encontrada.');
+    return transaction;
   }
 }

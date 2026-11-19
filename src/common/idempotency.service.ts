@@ -19,12 +19,12 @@ export class IdempotencyService {
     maxRetriesPerRequest: 1,
   });
 
-  async execute<T>(
+  async execute<T extends { user: unknown }>(
     scope: string,
     key: string | undefined,
     operation: () => Promise<T>,
     payload?: unknown,
-  ): Promise<T> {
+  ): Promise<Omit<T, 'user'>> {
     // Verifica se a Idempotency-Key existe e possui um formato válido
     if (
       !key ||
@@ -87,7 +87,8 @@ export class IdempotencyService {
           }
 
           // Se já foi concluída, devolve o resultado anterior
-          return record.response as T;
+          const { user: _owner, ...response } = record.response as T;
+          return response;
         }
 
         throw new ConflictException(
@@ -110,10 +111,11 @@ export class IdempotencyService {
     }
 
     // Executa a operação real da aplicação
-    let result: T;
+    let result: Omit<T, 'user'>;
 
     try {
-      result = await operation();
+      const { user: _owner, ...response } = await operation();
+      result = response;
     } catch (error) {
       // Se a operação falhar, libera a chave para uma nova tentativa
       await this.redis.del(redisKey).catch(() => undefined);

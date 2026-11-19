@@ -8,6 +8,7 @@ import { User } from './user.entity';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { JwtStrategy } from './jwt.strategy';
+import { jwtSecret } from './jwt-secret';
 import { RolesGuard } from '../../common/roles.guard';
 
 @Module({
@@ -24,9 +25,7 @@ import { RolesGuard } from '../../common/roles.guard';
 
       // Pega as configurações do JWT nas variáveis de ambiente.
       useFactory: (c: ConfigService) => ({
-        secret:
-          c.get('JWT_SECRET') ||
-          'local-development-secret-change-this-32chars',
+        secret: jwtSecret(c),
 
         signOptions: {
           expiresIn: c.get('JWT_EXPIRES_IN') || '15m',

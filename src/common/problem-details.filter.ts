@@ -33,7 +33,7 @@ export class ProblemDetailsFilter implements ExceptionFilter {
 
     // Pega a resposta original da exceção do NestJS
     const raw: any =
-      exception instanceof HttpException
+      exception instanceof HttpException && status !== HttpStatus.INTERNAL_SERVER_ERROR
         ? exception.getResponse()
         : null;
 
@@ -62,7 +62,7 @@ export class ProblemDetailsFilter implements ExceptionFilter {
             : HttpStatus[status],
         status,
         detail,
-        instance: req.url,
+        instance: req.path,
         requestId: (req as any).correlationId,
       });
   }

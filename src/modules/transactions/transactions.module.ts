@@ -7,6 +7,7 @@ import { Category } from '../categories/category.entity';
 
 import { TransactionsService } from './transactions.service';
 import { TransactionsController } from './transactions.controller';
+import { TransactionReceiptsService } from './transaction-receipts.service';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { TransactionsController } from './transactions.controller';
   // Registra o Service responsável pela lógica das transações.
   providers: [
     TransactionsService,
+    TransactionReceiptsService,
   ],
 
   // Registra o Controller responsável pelas rotas das transações.

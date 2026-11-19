@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 
 import {
-  ApiBearerAuth,
+  ApiBearerAuth, ApiHeader,
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
@@ -35,6 +35,7 @@ export class AccountsController {
   ) {}
 
   @Post() // Rota POST /accounts.
+  @ApiHeader({ name: 'idempotency-key', required: true, schema: { type: 'string', minLength: 1, maxLength: 128 } })
   @ApiOperation({
     summary: 'Criar conta (requer Idempotency-Key)',
   })

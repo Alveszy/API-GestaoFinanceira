@@ -21,6 +21,7 @@ export class RequestContextMiddleware implements NestMiddleware {
 
     // Envia o mesmo ID na resposta
     res.setHeader('Correlation-ID', id);
+    res.setHeader('Cache-Control', 'no-store');
 
     // Marca o momento em que a requisição começou
     const start = Date.now();
@@ -33,7 +34,7 @@ export class RequestContextMiddleware implements NestMiddleware {
           level: 'info',
           requestId: id,
           method: req.method,
-          path: req.originalUrl,
+          path: typeof req.route?.path === 'string' ? req.route.path : '(sem rota)',
           statusCode: res.statusCode,
           durationMs: Date.now() - start,
         }),

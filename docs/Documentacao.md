@@ -197,7 +197,7 @@ Criações de conta, categoria, transação e orçamento requerem cabeçalho `Id
 
 ### Observabilidade básica
 
-Middleware aceita `Correlation-ID` ou `X-Request-ID` válido (1–128 caracteres); se ausente ou inválido, gera UUID. Devolve `Correlation-ID` na resposta e emite log JSON no fim da requisição com timestamp, nível, ID, método, caminho, status e duração. Para observabilidade distribuída em nuvem, o mesmo cabeçalho deve ser encaminhado pelo gateway/load balancer.
+O middleware aceita `Correlation-ID` ou `X-Request-ID` válido (1–128 caracteres) e gera um UUID na ausência de um valor válido. Devolve `Correlation-ID` na resposta e emite log JSON com timestamp, nível, ID, método, modelo da rota, status e duração. Usar o modelo da rota evita gravar parâmetros de caminho e de consulta. As respostas incluem `Cache-Control: no-store`. Para observabilidade distribuída, encaminhe o cabeçalho de correlação pelo gateway ou balanceador.
 
 ### Controle de vazão
 
@@ -244,7 +244,7 @@ Compose aguarda os health checks de PostgreSQL e Redis antes de iniciar a API. A
 
 ## 11. Execução local
 
-1. Copie `.env.example` para `.env` e configure segredos adequados ao ambiente.
+1. Copie `.env.example` para `.env` e configure um `JWT_SECRET` aleatório com pelo menos 32 caracteres. O contêiner rejeita o segredo de exemplo.
 2. Execute `docker compose up --build`.
 3. Consulte `http://localhost:3000/docs`, `http://localhost:3000/api/v1/health` e as rotas sob `/api/v1`.
 
@@ -253,7 +253,7 @@ Compose aguarda os health checks de PostgreSQL e Redis antes de iniciar a API. A
 - A aplicação atualmente não implementa pagamento, integração bancária, atualização de saldo por evento nem refresh-token, apesar de existirem variáveis de ambiente reservadas a refresh. O domínio implementado é controle financeiro pessoal.
 - As rotas privadas autenticam o usuário, e as consultas/alterações são filtradas pela propriedade. RBAC explícito é aplicado às rotas administrativas; usuários cliente não têm endpoints de administração.
 - O throttle atual é local a cada instância. Configure backend Redis compartilhado ou gateway antes de escalar horizontalmente.
-- Compose publica portas dos bancos para facilitar desenvolvimento. Restrinja/remova essas publicações fora de ambientes locais.
+- Compose publica as portas do PostgreSQL e do Redis apenas no loopback do host para acesso local. A API usa a rede interna do Compose para acessar os dois serviços.
 - Para operação em produção, adicionar migrações, política de backup e restauração, TLS, rotação de segredos, monitoramento/alertas e testes automatizados do comportamento crítico.
 
 ## 13. Referências do projeto

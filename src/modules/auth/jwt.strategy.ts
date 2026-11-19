@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
+import { jwtSecret } from './jwt-secret';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -15,9 +16,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       ignoreExpiration: false,
 
       // Usa a chave secreta para validar o JWT.
-      secretOrKey:
-        config.get('JWT_SECRET') ||
-        'local-development-secret-change-this-32chars',
+      secretOrKey: jwtSecret(config),
     });
   }
 
@@ -25,7 +24,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   validate(payload: any) {
     return {
       id: payload.sub,
-      email: payload.email,
       role: payload.role,
     };
   }
